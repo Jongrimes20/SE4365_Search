@@ -388,8 +388,8 @@ def findFarthestPoint(location, goalArray):
         if lengthToCorner > farthestPointCost:
             farthestPoint = j
             farthestPointCost = lengthToCorner
-
-    return (farthestPoint, farthestPointCost)
+            
+    return (farthestPoint, farthestPointCost)  # Add this line to return the farthestPoint
 
 def cornersHeuristic(state, problem):
     """
