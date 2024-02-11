@@ -393,49 +393,28 @@ def findFarthestPoint(location, goalArray):
 
 def cornersHeuristic(state, problem):
     """
-    Encourage Pacman to find the shortest path that touches all four corners
-    of the maze.
-
-    This function should always return a number that is a lower bound on the
-    shortest path from the state to a goal of the problem; i.e., it should be
-    admissible.
+    Satisfies consistency req. using manhattan distance
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-    
-    heuristic = 0
-    currentLocation = state[0]
-    cornersUnvisited = state[1]
-    
-    #unvisited corners
-    unvisitedCorners = []
-    for i in range(len(cornersUnvisited)):
-        if not cornersUnvisited[i]:
-            unvisitedCorners.append(corners[i])
+    corners = problem.corners
+    current_location = state[0]
+    unvisited_corners = state[1]
 
-    #calculate the distance from current node to all corner nodes
-    if len(unvisitedCorners) > 0:
-        closestPoint = findClosestPoint(currentLocation, unvisitedCorners)
-        farthestPoint = findFarthestPoint(currentLocation, unvisitedCorners)
-        
-        closestPointIndex = closestPoint[0]
-        farthestPointIndex = farthestPoint[0]
+    # Find unvisited corners
+    unvisited = [corners[i] for i, visited in enumerate(unvisited_corners) if not visited]
 
-        currentNode = problem.startingGameState
-        closestNode = unvisitedCorners[closestPointIndex]
-        farthestNode = unvisitedCorners[farthestPointIndex]
+    # If there are unvisited corners, calculate the heuristic
+    if unvisited:
+        # Calculate Manhattan distance to the closest unvisited corner
+        closest_distance = min(util.manhattanDistance(current_location, corner) for corner in unvisited)
 
-        #mazeDistance returns maze distance btw 2 points: eg. mazeDistance( (2,4), (5,6), gameState)
+        # Calculate Manhattan distance to the farthest unvisited corner
+        farthest_distance = max(util.manhattanDistance(current_location, corner) for corner in unvisited)
 
-        #distance between current location and closest manhattan node
-        currentToClosest = mazeDistance(currentLocation, closestNode, currentNode)
+        # Return the maximum of the two distances as the heuristic value
+        return max(closest_distance, farthest_distance)
 
-        #distance between closest manhattan node and farthest manhattan node
-        closestToFarthest = mazeDistance(closestNode, farthestNode, currentNode)
-
-        heuristic = currentToClosest + closestToFarthest
-    
-    return heuristic
+    # If all corners are visited, the heuristic value is 0
+    return 0
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
